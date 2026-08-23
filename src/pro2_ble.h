@@ -1,0 +1,68 @@
+// SPDX-License-Identifier: GPL-3.0-only
+#pragma once
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#define PRO2_BLE_DIAGNOSTIC_REPORT_SIZE 64u
+
+typedef enum {
+    PRO2_BLE_STAGE_BOOT = 0,
+    PRO2_BLE_STAGE_STACK_INIT,
+    PRO2_BLE_STAGE_SCANNING,
+    PRO2_BLE_STAGE_CONNECTING,
+    PRO2_BLE_STAGE_CONNECTED,
+    PRO2_BLE_STAGE_CHARACTERISTIC_DISCOVERY,
+    PRO2_BLE_STAGE_DESCRIPTOR_DISCOVERY,
+    PRO2_BLE_STAGE_ACK_SUBSCRIBE,
+    PRO2_BLE_STAGE_INITIALIZING,
+    PRO2_BLE_STAGE_FD2_SUBSCRIBE,
+    PRO2_BLE_STAGE_WAITING_FD2,
+    PRO2_BLE_STAGE_READY,
+    PRO2_BLE_STAGE_MTU_EXCHANGE,
+    PRO2_BLE_STAGE_AUTO_CONNECT,
+    PRO2_BLE_STAGE_PAIRING,
+    PRO2_BLE_STAGE_SECURING,
+} pro2_ble_stage_t;
+
+typedef enum {
+    PRO2_BLE_ERROR_NONE = 0,
+    PRO2_BLE_ERROR_STACK_INIT,
+    PRO2_BLE_ERROR_SCAN_START,
+    PRO2_BLE_ERROR_SCAN_STOP,
+    PRO2_BLE_ERROR_CONNECT_START,
+    PRO2_BLE_ERROR_CONNECT,
+    PRO2_BLE_ERROR_DISCOVERY_START,
+    PRO2_BLE_ERROR_DISCOVERY_TIMEOUT,
+    PRO2_BLE_ERROR_CHARACTERISTIC_MISSING,
+    PRO2_BLE_ERROR_DESCRIPTOR_START,
+    PRO2_BLE_ERROR_DESCRIPTOR_TIMEOUT,
+    PRO2_BLE_ERROR_CCC_MISSING,
+    PRO2_BLE_ERROR_ACK_SUBSCRIBE,
+    PRO2_BLE_ERROR_INIT_WRITE,
+    PRO2_BLE_ERROR_INIT_ACK_TIMEOUT,
+    PRO2_BLE_ERROR_FD2_SUBSCRIBE,
+    PRO2_BLE_ERROR_FD2_TIMEOUT,
+    PRO2_BLE_ERROR_DISCONNECTED,
+    PRO2_BLE_ERROR_MTU_EXCHANGE,
+    PRO2_BLE_ERROR_PAIRING_RANDOM,
+    PRO2_BLE_ERROR_PAIRING_WRITE,
+    PRO2_BLE_ERROR_PAIRING_ACK_TIMEOUT,
+    PRO2_BLE_ERROR_PAIRING_RESPONSE,
+    PRO2_BLE_ERROR_PAIRING_CRYPTO,
+    PRO2_BLE_ERROR_SECURITY_START,
+    PRO2_BLE_ERROR_SECURITY_TIMEOUT,
+    PRO2_BLE_ERROR_SECURITY_CHANGE,
+} pro2_ble_error_t;
+
+void pro2_ble_start(void);
+bool pro2_ble_stack_ready(void);
+bool pro2_ble_connected(void);
+int pro2_ble_write_rumble(const uint8_t *data, size_t len);
+void pro2_ble_forget_peer(void);
+uint8_t pro2_ble_led_error_code(void);
+uint8_t pro2_ble_led_error_detail(void);
+uint8_t pro2_ble_led_error_value(void);
+size_t pro2_ble_build_diagnostic_report(uint8_t *report, size_t report_max);
+size_t pro2_ble_build_advertisement_report(uint8_t *report, size_t report_max);

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN" translate="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101820">
+  <meta name="description" content="Pro2 BL616 无线转接器 WebHID 配置与诊断工具">
+  <title>Pro2 Bridge Config</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+  <header class="topbar">
+    <a class="brand" href="#status" aria-label="Pro2 Bridge Config">
+      <img src="icon.svg" alt="">
+      <span><strong>Pro2 Bridge</strong><small>BL616 Web Config</small></span>
+    </a>
+    <div class="header-actions">
+      <span id="connectionPill" class="pill offline"><i></i><span>未连接</span></span>
+      <button id="connectButton" class="button primary">连接转接器</button>
+    </div>
+  </header>
+
+  <div id="secureNotice" class="notice warning hidden" role="alert">
+    <strong>当前页面没有 WebHID 权限。</strong>
+    <span id="secureNoticeText">请使用支持 WebHID 的 Chromium 浏览器，并通过安全来源打开。</span>
+  </div>
+
+  <nav class="tabs" aria-label="页面导航">
+    <button class="tab active" data-tab="status">状态</button>
+    <button class="tab" data-tab="tester">按键测试</button>
+    <button class="tab" data-tab="config">配置</button>
+    <button class="tab" data-tab="guide">说明</button>
+  </nav>
+
+  <main>
+    <section id="status" class="tab-panel active">
+      <div class="hero-card">
+        <div>
+          <p class="eyebrow">PRO2 / NINTENDO BRIDGE</p>
+          <h1>连接、验证、微调，<br><span>都在浏览器里完成。</span></h1>
+          <p class="hero-copy">网页只通过本机 USB 与转接器通信，不上传配对信息或手柄数据。</p>
+        </div>
+        <div class="controller-mark" aria-hidden="true">
+          <div class="controller-shell">
+            <span class="mini-stick left"></span><span class="mini-stick right"></span>
+            <span class="mini-dpad">✚</span><span class="mini-buttons">●<br>●</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <article class="metric"><span>BLE 状态</span><strong id="metricStage">未连接</strong><small id="metricStageHint">等待 USB 设备</small></article>
+        <article class="metric"><span>蓝牙信号</span><strong id="metricRssi">-- dBm</strong><small id="metricRssiHint">尚无广播数据</small></article>
+        <article class="metric"><span>BLE 回报率</span><strong id="metricBleRate">-- Hz</strong><small>基于 FD2 新报告计数</small></article>
+        <article class="metric"><span>USB 输入率</span><strong id="metricUsbRate">-- Hz</strong><small id="metricReportId">等待输入报告</small></article>
+      </div>
+
+      <div class="content-grid">
+        <article class="card">
+          <div class="card-title"><div><p class="eyebrow">DEVICE</p><h2>设备信息</h2></div><button id="refreshButton" class="button ghost small" disabled>刷新</button></div>
+          <dl class="details">
+            <div><dt>设备</dt><dd id="deviceName">--</dd></div>
+            <div><dt>序列号</dt><dd id="deviceSerial">--</dd></div>
+            <div><dt>诊断协议</dt><dd id="diagVersion">--</dd></div>
+            <div><dt>配置协议</dt><dd id="configVersion">--</dd></div>
+            <div><dt>手柄地址</dt><dd id="peerAddress">--</dd></div>
+            <div><dt>ATT MTU</dt><dd id="attMtu">--</dd></div>
+          </dl>
+        </article>
+
+        <article class="card">
+          <div class="card-title"><div><p class="eyebrow">DIAGNOSTICS</p><h2>连接诊断</h2></div><span id="readyBadge" class="badge neutral">等待连接</span></div>
+          <dl class="details">
+            <div><dt>最近错误</dt><dd id="lastError">--</dd></div>
+            <div><dt>断开原因</dt><dd id="disconnectReason">--</dd></div>
+            <div><dt>扫描报告</dt><dd id="scanReports">--</dd></div>
+            <div><dt>连接成功 / 断开</dt><dd id="connectionCounts">--</dd></div>
+            <div><dt>FD2 / ACK</dt><dd id="reportCounts">--</dd></div>
+            <div><dt>普通唤醒身份</dt><dd id="hostMatch">--</dd></div>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <section id="tester" class="tab-panel">
+      <div class="section-heading">
+        <div><p class="eyebrow">LIVE INPUT</p><h1>按键与摇杆测试</h1></div>
+        <div class="test-actions"><button id="rumbleButton" class="button accent" disabled>测试振动</button><button id="stopRumbleButton" class="button ghost" disabled>停止振动</button></div>
+      </div>
+
+      <div class="tester-grid">
+        <article class="card sticks-card">
+          <div class="stick-group">
+            <div class="stick-zone" id="leftStick"><span class="cross x"></span><span class="cross y"></span><i class="stick-dot"></i></div>
+            <strong>左摇杆</strong><code id="leftAxes">X 0.000 · Y 0.000</code>
+          </div>
+          <div class="stick-group">
+            <div class="stick-zone" id="rightStick"><span class="cross x"></span><span class="cross y"></span><i class="stick-dot"></i></div>
+            <strong>右摇杆</strong><code id="rightAxes">X 0.000 · Y 0.000</code>
+          </div>
+        </article>
+        <article class="card button-card">
+          <div id="buttonGrid" class="button-grid" aria-label="手柄按钮状态"></div>
+        </article>
+      </div>
+      <p class="muted center">支持浏览器通用报告 0x09 和 Steam 原生报告 0x05；页面会自动切换解析方式。</p>
+    </section>
+
+    <section id="config" class="tab-panel">
+      <div class="section-heading"><div><p class="eyebrow">PERSISTENT SETTINGS</p><h1>转接器配置</h1></div><span id="dirtyBadge" class="badge neutral">未读取</span></div>
+      <div class="config-grid">
+        <article class="card setting-card">
+          <div class="setting-head"><div><h2>摇杆死区</h2><p>过滤摇杆中心附近的轻微漂移，默认值 64。</p></div><output id="deadzoneValue">64</output></div>
+          <input id="deadzoneInput" type="range" min="0" max="256" step="1" value="64" disabled>
+          <div class="range-labels"><span>0 · 灵敏</span><span>256 · 稳定</span></div>
+        </article>
+        <article class="card setting-card">
+          <div class="setting-head"><div><h2>振动强度</h2><p>缩放主机传来的 HD 振动幅度，0% 可完全关闭。</p></div><output id="rumbleValue">100%</output></div>
+          <input id="rumbleInput" type="range" min="0" max="150" step="5" value="100" disabled>
+          <div class="range-labels"><span>0%</span><span>150%</span></div>
+        </article>
+      </div>
+      <article class="card action-card">
+        <div><h2>保存配置</h2><p>“应用”立即生效但断电后丢失；“永久保存”写入转接器 Flash。</p></div>
+        <div class="row-actions"><button id="applyButton" class="button ghost" disabled>应用</button><button id="saveButton" class="button primary" disabled>永久保存</button><button id="resetButton" class="button ghost" disabled>恢复默认</button></div>
+      </article>
+      <article class="card danger-card">
+        <div><h2>清除已配对手柄</h2><p>清除地址与配对密钥并重新扫描。下次必须长按 Pro2 顶部小配对键。</p></div>
+        <button id="forgetButton" class="button danger" disabled>清除配对</button>
+      </article>
+    </section>
+
+    <section id="guide" class="tab-panel">
+      <div class="section-heading"><div><p class="eyebrow">GUIDE</p><h1>使用说明</h1></div></div>
+      <div class="guide-grid">
+        <article class="card guide-step"><span>01</span><h2>首次配对</h2><p>刷入支持网页配置的固件后，长按 Pro2 顶部小配对键，等待转接器与手柄灯常亮。</p></article>
+        <article class="card guide-step"><span>02</span><h2>打开网页</h2><p>关闭其他占用 HID 的配置工具，点击“连接转接器”，在浏览器设备选择框中选择 057e:2069。</p></article>
+        <article class="card guide-step"><span>03</span><h2>日常恢复</h2><p>转接器重新插拔后只需按普通手柄按键唤醒；无需再次按顶部配对键。</p></article>
+      </div>
+      <article class="notice info"><strong>局域网测试提示</strong><span>WebHID 要求安全上下文。HTTP 局域网地址需要使用 Chromium 的“将不安全来源视为安全来源”测试参数，正式部署应使用可信 HTTPS。</span></article>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <footer><span>Pro2 Bridge Config · 本地 WebHID</span><span>不包含在线 OTA</span></footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

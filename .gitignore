@@ -1,0 +1,22 @@
+build/
+firmware/lctech616/*.bin
+firmware/lctech616/partition.bin
+firmware/lctech616/boot2_*.bin
+tests/test_protocol
+tools/__pycache__/
+
+# Local credentials and private keys
+.env
+.env.*
+!.env.example
+.netrc
+.npmrc
+.pypirc
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519

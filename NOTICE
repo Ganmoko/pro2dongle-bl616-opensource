@@ -1,0 +1,15 @@
+Pro2 Nintendo Bridge for LCTech BL616
+
+The Pro2 and Nintendo protocol behavior in this port is derived from the
+Apache-2.0 project XinHeLianSheng-Pro2-Bridge by LeonChrome, branch
+codex/v5.9.17-source-paced (commit 67d32f2).
+
+The BL616 board, build, Bluetooth and CherryUSB integration is adapted from
+the GPL-3.0-only project ds5dongle-bl618-opensource by sqlCRT, v3.17
+(commit 1b29d44), and uses its Bouffalo SDK fork (commit 42c20811) as an
+external build dependency. Consequently this combined port is distributed
+under GPL-3.0-only; see LICENSE for the complete terms. The Apache-2.0 license
+for XinHeLianSheng-Pro2-Bridge remains available in that source repository.
+
+Nintendo, Nintendo Switch and related names are trademarks of Nintendo. This
+unofficial project is not affiliated with or endorsed by Nintendo.

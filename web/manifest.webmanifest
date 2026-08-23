@@ -1,0 +1,11 @@
+{
+  "name": "Pro2 Bridge Config",
+  "short_name": "Pro2 Config",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f2efe8",
+  "theme_color": "#101820",
+  "icons": [
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}

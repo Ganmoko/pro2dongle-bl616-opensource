@@ -1,0 +1,29 @@
+Subject: [PATCH] bluetooth: use the Pro2 reference initiator scan window
+
+The BL616 whitelist initiator defaults to a 60 ms interval and 30 ms window.
+Normal Pro2 wake repeatedly reaches a transient connection and then terminates
+with HCI reason 0x3e.  The working ESP32-S3 Pro2 bridge uses a 10 ms interval
+and a 10 ms window when it issues LE Create Connection.
+
+This change affects only the whitelist LE Create Connection scan cadence.
+It does not change the 7.5 ms connection interval, GATT setup, USB reports, or
+rumble path.
+
+--- a/components/wireless/bluetooth/blestack/src/host/hci_core.c
++++ b/components/wireless/bluetooth/blestack/src/host/hci_core.c
+@@ -1057,9 +1057,12 @@ int bt_le_auto_conn(const struct bt_le_conn_param *conn_param)
+ 	cp->filter_policy = BT_HCI_LE_CREATE_CONN_FP_WHITELIST;
+ 	cp->own_addr_type = own_addr_type;
+ 
+-	/* User Initiated procedure use fast scan parameters. */
+-	cp->scan_interval = sys_cpu_to_le16(BT_GAP_SCAN_FAST_INTERVAL);
+-	cp->scan_window = sys_cpu_to_le16(BT_GAP_SCAN_FAST_WINDOW);
++	/* Match the Pro2 reference bridge's initiator scan cadence.  The stock
++	 * 60 ms / 30 ms whitelist window repeatedly loses synchronization with a
++	 * normally-woken Pro2 on BL616 (0x3e), while the reference central uses a
++	 * continuous 10 ms / 10 ms window. */
++	cp->scan_interval = sys_cpu_to_le16(0x0010);
++	cp->scan_window = sys_cpu_to_le16(0x0010);
+ 
+ 	cp->conn_interval_min = sys_cpu_to_le16(conn_param->interval_min);
+ 	cp->conn_interval_max = sys_cpu_to_le16(conn_param->interval_max);
