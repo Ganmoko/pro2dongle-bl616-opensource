@@ -1,17 +1,35 @@
 # Pro2 Wireless USB Receiver for LCTech BL616
 
-> In short: flash this firmware to an LCTech BL616, and the BL616 connects
-> wirelessly to a Pro2 controller over BLE, then bridges controller input,
-> motion, and HD rumble to a PC or other host over USB.
+> In short: the Pro2 cannot be paired and used through Windows Bluetooth
+> settings like an ordinary Bluetooth gamepad. This firmware lets an LCTech
+> BL616 connect to the Pro2 over BLE, then bridge input, motion, and HD rumble
+> to a PC or other host over USB.
 
 ```text
 Pro2 controller  <-- BLE wireless -->  LCTech BL616  <-- USB -->  PC / Steam / host
 ```
 
-The BL616 acts as a dedicated wireless USB receiver for the Pro2 controller.
-It enumerates on the host as a Nintendo-style `057e:2069` USB device, so the
-host computer does not need to connect to the controller with its own
-Bluetooth adapter.
+Here, Pro2 means the Nintendo Switch 2 Pro Controller (USB
+`VID:PID 057e:2069`).
+
+## Why the BL616 receiver is needed
+
+The Pro2 wireless link uses BLE, but the controller is not a standard
+Bluetooth HID gamepad that Windows can pair and use natively. Windows "Add a
+device" does not perform the controller's proprietary pairing and
+initialization flow, and controller input arrives through Nintendo-specific
+GATT notifications rather than as a normal Windows Bluetooth HID device.
+
+This firmware makes the BL616 a dedicated Pro2 receiver. The BL616 handles BLE
+scanning, proprietary pairing, GATT initialization, input notifications, and
+rumble communication, then exposes a Nintendo-style `057e:2069` USB device to
+the PC or host. In other words, it solves the problem that the Pro2 cannot be
+used as an ordinary directly paired Bluetooth controller on Windows.
+
+PC software that explicitly implements the private Pro2 protocol can also
+access its BLE services directly, but that is different from native Windows
+Bluetooth pairing. This project moves the complete wireless protocol onto the
+BL616 instead.
 
 [中文完整说明](README_CN.md)
 
